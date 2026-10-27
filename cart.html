@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>My Cart | FoodieHub</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="style.css"></head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light"><div class="container"><a class="navbar-brand fw-bold" href="index.html">FoodieHub</a><div><a href="index.html" class="btn btn-outline-dark btn-sm">Home</a> <a href="about.html" class="btn btn-outline-dark btn-sm">About</a> <a href="orders.html" class="btn btn-outline-dark btn-sm">Orders</a> <a href="cart.html" class="btn btn-success btn-sm">🛒 Cart <span id="cartCount">0</span></a> <a href="login.html" id="loginLink" class="btn btn-warning btn-sm">Login</a> <button id="logoutButton" class="btn btn-outline-dark btn-sm d-none">Logout</button></div></div></nav>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">🛒 My Cart</h2>
+    <p id="cartMessage" class="text-center" role="status"></p>
+    <div class="table-responsive"><table class="table table-bordered text-center align-middle"><thead class="table-dark"><tr><th>Food Item</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th>Action</th></tr></thead><tbody id="cartBody"></tbody></table></div>
+    <h3 id="total" class="text-end"></h3>
+    <section id="checkout" class="card p-3 mt-4 d-none"><h4>Delivery details</h4><form id="checkoutForm"><label for="deliveryAddress" class="form-label">Delivery address</label><textarea id="deliveryAddress" class="form-control mb-3" rows="3" minlength="8" maxlength="500" required placeholder="Enter your complete delivery address"></textarea><p class="mb-2">Payment: Cash on Delivery</p><button id="placeOrder" class="btn btn-warning" type="submit">Place Order</button></form></section>
+    <div class="text-center mt-4"><a href="index.html" class="btn btn-primary">Continue Shopping</a> <button id="clearCart" class="btn btn-danger" type="button">Clear Cart</button></div>
+</div>
+<script src="script.js"></script>
+<script>
+let cartData;
+async function renderCart() {
+  const body=document.getElementById('cartBody');
+  try {
+    cartData=await api('/api/cart');
+    body.innerHTML=cartData.items.map(item=>`<tr><td>${escapeHtml(item.name)}</td><td>${money(item.price)}</td><td><div class="d-inline-flex align-items-center gap-2"><button class="btn btn-outline-secondary btn-sm" data-quantity="${item.id}" data-value="${item.quantity-1}" ${item.quantity<=1?'disabled':''}>−</button><span>${item.quantity}</span><button class="btn btn-outline-secondary btn-sm" data-quantity="${item.id}" data-value="${item.quantity+1}" ${item.quantity>=99?'disabled':''}>+</button></div></td><td>${money(item.subtotal)}</td><td><button class="btn btn-danger btn-sm" data-remove="${item.id}">Remove</button></td></tr>`).join('');
+    document.getElementById('total').textContent=`Total Price: ${money(cartData.total)}`;
+    document.getElementById('checkout').classList.toggle('d-none',!cartData.items.length);
+    document.getElementById('clearCart').disabled=!cartData.items.length;
+    showMessage('cartMessage',cartData.items.length?'':'Your cart is empty. Add some food to get started.','muted');
+    updateCartCount();
+  } catch(error) { if(error.loginRequired) { sessionStorage.setItem('foodiehubReturnTo','cart.html');location.href='login.html';return; } showMessage('cartMessage',error.message); }
+}
+document.addEventListener('click',async event=>{
+  const quantity=event.target.closest('[data-quantity]'); const remove=event.target.closest('[data-remove]');
+  try {
+    if(quantity){await api(`/api/cart/${quantity.dataset.quantity}`,{method:'PATCH',body:JSON.stringify({quantity:Number(quantity.dataset.value)})});await renderCart();}
+    if(remove){await api(`/api/cart/${remove.dataset.remove}`,{method:'DELETE'});await renderCart();}
+    if(event.target.id==='clearCart'){await api('/api/cart',{method:'DELETE'});await renderCart();}
+  } catch(error){showMessage('cartMessage',error.message);}
+});
+let submitting=false;
+document.getElementById('checkoutForm').addEventListener('submit',async event=>{
+  event.preventDefault();if(submitting)return;submitting=true;const button=document.getElementById('placeOrder');button.disabled=true;
+  try { const data=await api('/api/orders',{method:'POST',body:JSON.stringify({deliveryAddress:document.getElementById('deliveryAddress').value})}); alert(`${data.message} Order ID: ${data.orderId}`);location.href='orders.html'; }
+  catch(error){showMessage('cartMessage',error.message);submitting=false;button.disabled=false;}
+});
+document.addEventListener('DOMContentLoaded',renderCart);
+</script>
+</body></html>

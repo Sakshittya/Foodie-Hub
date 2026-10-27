@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login | FoodieHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-bg">
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="login-card p-4 shadow-lg">
+        <h2 id="formTitle" class="text-center mb-3">Welcome Back 👋</h2>
+        <p id="formSubtitle" class="text-center text-muted mb-4">Login to order delicious food</p>
+        <form id="authForm">
+            <div id="nameGroup" class="input-group mb-3 d-none"><span class="input-group-text"><i class="bi bi-person"></i></span><input type="text" id="name" class="form-control" placeholder="Your Name" minlength="2" maxlength="100" autocomplete="name"></div>
+            <div class="input-group mb-3"><span class="input-group-text"><i class="bi bi-envelope"></i></span><input type="email" id="email" class="form-control" placeholder="Enter Email" autocomplete="email" required></div>
+            <div class="input-group mb-3"><span class="input-group-text"><i class="bi bi-lock"></i></span><input type="password" id="password" class="form-control" placeholder="Enter Password" minlength="8" maxlength="72" autocomplete="current-password" required></div>
+            <button id="submitButton" class="btn btn-warning w-100" type="submit">Login</button>
+        </form>
+        <p id="error" role="status" class="text-danger text-center mt-2"></p>
+        <p id="success" role="status" class="text-success text-center mt-2"></p>
+        <div class="text-center mt-3"><small><span id="togglePrompt">Don't have an account?</span> <a href="#" id="toggleAuth">Sign Up</a></small></div>
+        <div class="text-center mt-2"><small><a href="index.html">Back to FoodieHub</a></small></div>
+    </div>
+</div>
+<script src="script.js"></script>
+<script>
+let registering = false;
+const form = document.getElementById('authForm');
+document.getElementById('toggleAuth').addEventListener('click', event => {
+  event.preventDefault(); registering = !registering;
+  document.getElementById('nameGroup').classList.toggle('d-none', !registering);
+  document.getElementById('name').required = registering;
+  document.getElementById('formTitle').textContent = registering ? 'Create Account' : 'Welcome Back 👋';
+  document.getElementById('formSubtitle').textContent = registering ? 'Sign up to order delicious food' : 'Login to order delicious food';
+  document.getElementById('submitButton').textContent = registering ? 'Sign Up' : 'Login';
+  document.getElementById('togglePrompt').textContent = registering ? 'Already have an account?' : "Don't have an account?";
+  event.currentTarget.textContent = registering ? 'Login' : 'Sign Up';
+  document.getElementById('password').autocomplete = registering ? 'new-password' : 'current-password';
+  showMessage('error',''); showMessage('success','');
+});
+form.addEventListener('submit', async event => {
+  event.preventDefault(); showMessage('error',''); showMessage('success','');
+  const payload = {email:document.getElementById('email').value.trim(),password:document.getElementById('password').value};
+  if(registering) payload.name = document.getElementById('name').value.trim();
+  try {
+    const data = await api(registering ? '/api/auth/register' : '/api/auth/login',{method:'POST',body:JSON.stringify(payload)});
+    showMessage('success', registering ? 'Account created. Redirecting…' : 'Login successful. Redirecting…','success');
+    const next = sessionStorage.getItem('foodiehubReturnTo') || 'index.html'; sessionStorage.removeItem('foodiehubReturnTo');
+    setTimeout(() => location.href = next, 500);
+  } catch(error) { showMessage('error',error.message); }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FoodieHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #f8f9fa; }
+        .food-card { border-radius: 10px; overflow: hidden; transition: 0.3s; }
+        .food-card:hover { transform: scale(1.03); }
+        .food-card img { width: 100%; height: 200px; object-fit: cover; }
+        .card-body { padding: 12px; }
+        .btn-warning { background: #ff9800; border: none; }
+        .btn-warning:hover { background: #e68900; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="index.html">FoodieHub</a>
+    <div>
+      <a href="index.html" class="btn btn-outline-dark btn-sm">Home</a>
+      <a href="about.html" class="btn btn-outline-dark btn-sm">About</a>
+      <a id="loginLink" href="login.html" class="btn btn-warning btn-sm">Login</a>
+      <a href="orders.html" class="btn btn-outline-dark btn-sm">Orders</a>
+      <button id="logoutButton" class="btn btn-outline-dark btn-sm d-none" type="button">Logout</button>
+      <a href="cart.html" class="btn btn-success btn-sm">🛒 Cart <span id="cartCount">0</span></a>
+    </div>
+  </div>
+</nav>
+<div class="container text-center my-4">
+    <h2>Delicious Food Delivered To Your Door 🍔</h2>
+    <p class="text-muted">Fresh, fast and affordable meals</p>
+</div>
+<div class="container">
+    <p id="menuMessage" class="text-center text-muted" role="status">Loading menu…</p>
+    <div class="row g-3" id="foodContainer"></div>
+</div>
+<footer class="bg-light text-center p-3 mt-4"><p>© 2026 FoodieHub</p></footer>
+<script src="script.js"></script>
+</body>
+</html>

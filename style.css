@@ -1,0 +1,61 @@
+body {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+}
+
+h1, h2 {
+    color: #ba1dc9;
+}
+
+.food-card {
+    transition: transform 0.3s;
+    border-radius: 10px;
+}
+
+.food-card:hover {
+    transform: scale(1.05);
+}
+
+.btn-warning {
+    background-color: #ff9800;
+    border: none;
+}
+
+.btn-warning:hover {
+    background-color: #e68900;
+}
+
+.card img {
+    border-radius: 10px 10px 0 0;
+}
+.about-hero {
+    height: 300px;
+    background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836') center/cover;
+}
+/* Background */
+.login-bg {
+    background: linear-gradient(to right, #ffecd2, #fcb69f);
+}
+
+/* Card */
+.login-card {
+    width: 350px;
+    background: white;
+    border-radius: 15px;
+}
+
+/* Input focus */
+.form-control:focus {
+    box-shadow: none;
+    border-color: #ff9800;
+}
+
+/* Button */
+.btn-warning {
+    background-color: #ff9800;
+    border: none;
+}
+
+.btn-warning:hover {
+    background-color: #e68900;
+}
